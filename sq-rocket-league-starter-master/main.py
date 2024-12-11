@@ -13,21 +13,23 @@ class Bot(BotCommandAgent):
     # This function runs every in-game tick (every time the game updates anything)
     def run(self):
         if self.kickoff_flag:
-            if dist_to(self.ball.location, self.me.location) < 600:
-                self.set_intent(flip(self.me.local(self.foe_goal.location - self.me.location)))
-            else:
-                self.set_intent(atba())
-            return
+            self.set_intent(kickoff())
+            relative_target = self.ball.location - self.me.location
+            local_target = self.me.local(relative_target)
+            defaultPD(self, local_target)
 
-        line = self.foe_goal.location - self.ball.location
-        hypotenuse = dist_to(self.ball.location, self.foe_goal.location)
-        y_dist = line.y / hypotenuse * 300
-        x_dist = line.x / hypotenuse * 300
-        point = self.ball.location - [x_dist, y_dist, 0]
+        if dist_to(self.ball.location, self.friend_goal.location) < 1500:
+            point = self.friend_goal.location + self.foe_goal.location * 0.1
+        else:
+            line = self.foe_goal.location - self.ball.location
+            hypotenuse = dist_to(self.ball.location, self.foe_goal.location)
+            y_dist = line.y / hypotenuse * 400
+            x_dist = line.x / hypotenuse * 400
+            point = self.ball.location - [x_dist, y_dist, 0]
 
-        self.set_intent(go_near(point))
+        self.set_intent(go_near(point, ball = 1))
 
-        dist = dist_to(self.me.location, self.ball.location)
-        
+        dist = dist_to(self.me.location, point)
+          
         if dist < 200:
-            self.set_intent(flip(self.me.local(self.ball.location - self.me.location)))
+            self.set_intent(short_shot(self.foe_goal.location))
