@@ -11,6 +11,27 @@ from util.objects import Routine
 
 # Similarly, in the videos drive does not have "(Routine)" behind it. That's  just telling the program
 # that the "drive" class should look like a "Routine" above. It helps with the code suggestions. 
+
+class go_near(Routine):
+    def __init__(self, point: Vector3, ball = False):
+        self.point = point
+        self.ball = ball
+
+    def run(self, agent):
+        if self.ball:
+            ball_dist = agent.ball.location - agent.me.location
+            time = max((ball_dist / agent.me.velocity).data)
+            ball_movement = time * agent.ball.velocity
+            self.point += ball_movement
+
+        xdist, ydist, zdist = self.point - agent.me.location
+        dist = math.sqrt(xdist**2 + ydist**2)
+
+        relative_target = agent.ball.location - agent.me.location
+        local_target = agent.me.local(relative_target)
+        defaultPD(agent, local_target)
+        defaultThrottle(agent, dist * 2.5 + 10)
+
 class jump(Routine):
     def run(self, agent):
         agent.controller.jump = True
