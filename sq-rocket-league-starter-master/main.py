@@ -13,10 +13,8 @@ class Bot(BotCommandAgent):
     # This function runs every in-game tick (every time the game updates anything)
     def run(self):
         if self.kickoff_flag:
-            self.set_intent(kickoff())
-            relative_target = self.ball.location - self.me.location
-            local_target = self.me.local(relative_target)
-            defaultPD(self, local_target)
+            self.set_intent(atba())
+            return
 
         if dist_to(self.ball.location, self.friend_goal.location) < 1500:
             point = self.friend_goal.location + self.foe_goal.location * 0.1
